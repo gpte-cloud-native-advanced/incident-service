@@ -15,7 +15,6 @@ import io.smallrye.mutiny.Multi;
 import io.smallrye.mutiny.operators.multi.processors.UnicastProcessor;
 import io.smallrye.reactive.messaging.kafka.IncomingKafkaRecord;
 import io.smallrye.reactive.messaging.kafka.KafkaRecord;
-import io.vertx.core.json.Json;
 import io.vertx.core.json.JsonObject;
 import org.eclipse.microprofile.reactive.messaging.Acknowledgment;
 import org.eclipse.microprofile.reactive.messaging.Incoming;
@@ -76,11 +75,11 @@ public class IncidentCommandMessageSource {
     }
 
     @Outgoing("incident-event")
-    public Multi<org.eclipse.microprofile.reactive.messaging.Message<String>> source() {
+    public Multi<org.eclipse.microprofile.reactive.messaging.Message<Message<?>>> source() {
         return processor.onItem().transform(this::toMessage);
     }
 
-    private org.eclipse.microprofile.reactive.messaging.Message<String> toMessage(JsonObject incident) {
+    private org.eclipse.microprofile.reactive.messaging.Message<Message<?>> toMessage(JsonObject incident) {
         Message<IncidentEvent> message = new Message.Builder<>("IncidentUpdatedEvent", "IncidentService",
                 new IncidentEvent.Builder(incident.getString("id"))
                         .lat(new BigDecimal(incident.getString("lat")))
@@ -93,9 +92,7 @@ public class IncidentCommandMessageSource {
                         .status(incident.getString("status"))
                         .build())
                 .build();
-        String json = Json.encode(message);
-        log.debug("Message: " + json);
-        return KafkaRecord.of(incident.getString("id"), json);
+        return KafkaRecord.of(incident.getString("id"), message);
     }
 
 }
