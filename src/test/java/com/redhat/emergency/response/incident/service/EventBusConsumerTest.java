@@ -9,7 +9,7 @@ import static org.hamcrest.Matchers.isA;
 import static org.hamcrest.Matchers.notNullValue;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
-import static org.mockito.MockitoAnnotations.initMocks;
+import static org.mockito.MockitoAnnotations.openMocks;
 
 import java.math.BigDecimal;
 import java.time.Instant;
@@ -58,7 +58,7 @@ public class EventBusConsumerTest {
 
     @BeforeEach
     void init() {
-        initMocks(this);
+        openMocks(this);
         messageReplyCalled = false;
         messageReplyBody = null;
         messageFailed = false;
